@@ -1,0 +1,194 @@
+#!/bin/bash
+# MageSpawner
+#
+# Copyright 2011-2012 Matthias Zeis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# System Requirements:
+# - bash
+# - The following commands must be locatable in your $PATH
+#   basename mysql php sed tar wget which
+
+version="0.1"
+usage="\
+MageSpawner (v$version)
+
+MageSpawner is a tool for quick setup of multiple Magento test installations.
+THIS IS NOT MEANT TO BE USED ON PRODUCTION ENVIORNMENTS!
+
+Usage:
+./install
+Then follow the instructions on the screen.
+
+Consult the README for further information.
+
+Options:
+
+  --help                    display this help message
+  --usage                   display this help message
+  --version                 display the version of this script
+
+Get more information at
+http://matthias-zeis.com"
+
+###########################
+## Common options: help, usage and version number
+
+if [ "$1" = "--help" ]; then
+  echo "$usage"
+  exit 0
+elif [ "$1" = "--usage" ]; then
+  echo "$usage"
+  exit 0
+elif [ "$1" = "--version" ]; then
+  echo "$version"
+  exit 0
+fi
+
+###########################
+## Main script
+
+echo -e 'Welcome to MageSpawner.\n'
+
+if [[ ! -f ${0%/*}/config.conf ]]; then
+  echo -e 'config.conf not found.\nPlease copy config.conf.sample to config.conf and adjust your settings.'
+  exit 1
+fi
+. ${0%/*}/config.conf
+
+if [[ $MAGE_BASE_DIR = "" || $MAGE_BASE_DIR = "/" ]]; then
+  echo "Base directory '$MAGE_BASE_DIR' is not allowed. Please change in configuration."
+  exit 1
+fi
+
+MYSQL=$(which mysql) || { echo 'MySQL executable not found'; exit 1; }
+PHP=$(which php) || { echo 'PHP executable not found'; exit 1; }
+SED=$(which sed) || { echo 'sed command not found'; exit 1; }
+
+
+
+echo "Which version do you want to install?"
+echo "1) None, abort installation"
+echo "2) CE 1.5.0.1"
+echo "3) CE 1.5.1.0"
+echo "4) CE 1.6.0.0"
+echo "5) CE 1.6.1.0"
+echo "6) CE 1.6.2.0"
+echo "7) CE 1.7.0.0 alpha1"
+echo "8) CE 1.7.0.0 beta1"
+
+while true; do
+   read -p "Enter the number (e.g. 1): " MAGE_VERSION
+
+   case "$MAGE_VERSION" in
+      1)
+          echo "Aborting installation."
+          exit;
+          ;;
+      2)
+          echo -e "CE 1.5.0.1 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.5.0.1/magento-1.5.0.1.tar.gz"
+          break
+          ;;
+      3)
+          echo -e "CE 1.5.1.0 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.5.1.0/magento-1.5.1.0.tar.gz"
+          break
+          ;;
+      4)
+          echo -e "CE 1.6.0.0 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.6.0.0/magento-1.6.0.0.tar.gz"
+          break
+          ;;
+      5)
+          echo -e "CE 1.6.1.0 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-1.6.1.0.tar.gz"
+          break
+          ;;
+      6)
+          echo -e "CE 1.6.2.0 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.6.2.0/magento-1.6.2.0.tar.gz"
+          break
+          ;;
+      7)
+          echo -e "CE 1.7.0.0 alpha1 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz"
+          break
+          ;;
+      8)
+          echo -e "CE 1.7.0.0 beta1 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz"
+          break
+          ;;
+      *)
+          echo -e "Invalid option, please try again.\n"
+          ;;
+    esac
+done 
+
+echo "Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like."
+read -p "Shop name (default: ${MAGE_DEFAULT_NAME}): " MAGE_NAME
+MAGE_NAME=${MAGE_NAME:-${MAGE_DEFAULT_NAME}}
+MAGE_SHOPDOMAIN="${MAGE_NAME}.${MAGE_DOMAIN}"
+
+# Use information for setting variables
+MAGE_UNSECURE_URL="http://${MAGE_SHOPDOMAIN}"
+MAGE_SECURE_URL="http://${MAGE_SHOPDOMAIN}"
+MAGE_DOWNLOAD_FILENAME=$(basename $MAGE_DOWNLOAD_URL)
+DB_NAME="${DB_NAMEPREFIX}${MAGE_NAME}"
+DB_SQL="CREATE DATABASE IF NOT EXISTS ${DB_NAME} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+
+echo -e "Thanks, the required information was provided. The installation will now begin.\n"
+
+cd $MAGE_BASE_DIR
+echo "Downloading Magento package..."
+wget $MAGE_DOWNLOAD_URL
+echo -e "Package downloaded.\n"
+
+echo "Unpacking package and setting permissions."
+tar -zxf $MAGE_DOWNLOAD_FILENAME 
+mv magento/ "$MAGE_SHOPDOMAIN"/
+rm -f $MAGE_DOWNLOAD_FILENAME
+chown -R ${LINUX_USER}:${LINUX_GROUP} "$MAGE_SHOPDOMAIN"/
+cd "$MAGE_SHOPDOMAIN"/
+chmod 777 app/etc var/ media/
+echo -e "Package unpacked and permssions set.\n"
+
+echo "Creating database..."
+$MYSQL -u${DB_USER} -p${DB_PASS} -e "${DB_SQL}"
+echo -e "Database created.\n"
+
+echo "Executing Magento setup script..."
+$PHP -f install.php -- --license_agreement_accepted "yes" --locale "de_DE" --timezone "Europe/Berlin" --default_currency "EURO" --db_host "${DB_HOST}" --db_name "${DB_NAME}" --db_user "${DB_USER}" --db_pass "${DB_PASS}" \ db_prefix "${DB_TABLEPREFIX}" --session_save "files" --admin_frontname "${ADMIN_FRONTNAME}" --url "${MAGE_UNSECURE_URL}" --skip_url_validation --use_rewrites "yes" --use_secure "no" --secure_base_url "${MAGE_SECURE_URL}" --use_secure_admin "no" --admin_firstname "${ADMIN_FIRSTNAME}" --admin_lastname "${ADMIN_LASTNAME}" --admin_email "${ADMIN_EMAIL}" --admin_username "${ADMIN_USERNAME}" --admin_password "${ADMIN_PASSWORD}"
+echo -e "Setup script executed. Please write down the encryption key provided above.\n"
+
+echo "Reindexing Magento indexes..."
+$PHP -f shell/indexer.php reindexall
+echo -e "Indexes reindexed.\n"
+
+echo "Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)..."
+cp .htaccess .htaccess.backup
+$SED "s/#RewriteBase \/magento\//RewriteBase \//" ${MAGE_BASE_DIR}${MAGE_SHOPDOMAIN}/.htaccess.backup >.htaccess
+rm .htaccess.backup
+echo -e ".htaccess edited.\n"
+
+# Adjust permissions 
+echo "Final permission settings..."
+chmod 644 app/etc/local.xml
+chown ${LINUX_USER}:${LINUX_GROUP} app/etc/local.xml
+echo -e "Done.\n"
+
+echo "If you didn't see any error messages, everything went fine."
+echo "Set up your vhost config and host entries (if needed) and you are ready to go!"
+echo "The frontend shop URL is ${MAGE_UNSECURE_URL}."

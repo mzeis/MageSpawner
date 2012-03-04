@@ -1,0 +1,101 @@
+#!/bin/bash
+# MageSpawner Remover
+#
+# Copyright 2011-2012 Matthias Zeis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# System Requirements:
+# - bash
+# - The following executables must be locatable in your $PATH
+#   mysql
+#   
+
+version="0.1"
+usage="\
+MageSpawner Remover (v$version)
+
+MageSpawner Remover is a tool for removing Magento installations set up by
+MageSpawner.
+THIS IS NOT MEANT TO BE USED ON PRODUCTION ENVIORNMENTS!
+
+Usage:
+./remove
+Then follow the instructions on the screen.
+
+Consult the README for further information.
+
+Options:
+
+  --help                    display this help message
+  --usage                   display this help message
+  --version                 display the version of this script
+
+Get more information at
+http://matthias-zeis.com"
+
+###########################
+## Common options: help, usage and version number
+
+if [ "$1" = "--help" ]; then
+  echo "$usage"
+  exit 0
+elif [ "$1" = "--usage" ]; then
+  echo "$usage"
+  exit 0
+elif [ "$1" = "--version" ]; then
+  echo "$version"
+  exit 0
+fi
+
+###########################
+## Main script
+
+echo -e "Welcome to the Magento uninstall script.\n"
+
+if [[ ! -f ${0%/*}/config.conf ]]; then
+  echo -e 'config.conf not found.\nPlease copy config.conf.sample to config.conf and adjust your settings.'
+  exit 1
+fi
+. ${0%/*}/config.conf
+
+MYSQL=$(which mysql) || { echo 'MySQL executable not found'; exit 1; }
+
+echo "Which shop do you want to uninstall? Provide only the subdomain part of the domains provided."
+ls -1 ${MAGE_BASE_DIR}
+
+while true; do
+   read -p "Shop code: " MAGE_SHOP_CODE
+   MAGE_SHOP_DIR="${MAGE_BASE_DIR}${MAGE_SHOP_CODE}.${MAGE_DOMAIN}"
+
+   if [ -d "${MAGE_SHOP_DIR}" ]; then
+       break;
+   else
+break;
+       echo "Shop does not exist. Please retry."
+   fi
+done
+
+DB_NAME="${DB_NAMEPREFIX}${MAGE_SHOP_CODE}"
+DB_SQL="DROP DATABASE ${DB_NAME};"
+
+echo -e "\nDeleting files..."
+rm -rf ${MAGE_SHOP_DIR}
+echo -e "Files deleted.\n"
+
+echo "Deleting database..."
+$MYSQL -u${DB_USER} -p${DB_PASS} -e "${DB_SQL}"
+echo -e "Database deleted.\n"
+
+echo "Shop was deleted successfully. Please delete vhost entries and host config as needed."
+exit
