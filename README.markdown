@@ -11,6 +11,7 @@ The goal is to quickly create new (and remove) Magento installations for testing
 
   * Linux/Unix (tested on Debian)
   * bash
+  * Needs to be run via sudo / as root (chown and chmod are used) 
   * These commands must be available:
      * basename
      * mysql
@@ -28,7 +29,7 @@ The goal is to quickly create new (and remove) Magento installations for testing
 
 ## Getting started
 
-Call `./install` and follow the instructions. At the moment, you have to enter the details in an interactive mode (= no command line automatisation).
+Run `sudo ./install` and follow the instructions. You have to be a superuser because chown and chmod are used. At the moment, you have to enter the details in an interactive mode (= no command line automatisation).
 
 This is how it looks like on my VM:
 
