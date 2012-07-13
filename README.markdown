@@ -99,7 +99,7 @@ This is how it looks like on my VM:
 
 After the script has finished, you may be two steps away from using the new Magento installation:
 
-  1. **Add an entry two your hosts file**. Your browser has to know which server the domain (e.g. 1702.magentoshops.vom) belongs to. If you use a real domain and have set an wildcard DNS record, then you are good to go. Otherwise, open your hosts file and a line like `192.168.1.2 1702.magentoshops.vm` (don't forget to change this to the correct IP and domain).
+  1. **Add an entry two your hosts file**. Your browser has to know which server the domain (e.g. 1702.magentoshops.vm) belongs to. If you use a real domain and have set an wildcard DNS record, then you are good to go. Otherwise, open your hosts file and a line like `192.168.1.2 1702.magentoshops.vm` (don't forget to change this to the correct IP and domain).
 
   2. **Add an entry to your server configuration**. Your web server has to know how to handle the request. Normally, you would have to add a [Virtual Host](http://httpd.apache.org/docs/2.2/vhosts/name-based.html) every single time you setup a new Magento installation.
 
