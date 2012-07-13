@@ -77,7 +77,6 @@ PHP=$(which php) || { echo 'PHP executable not found'; exit 1; }
 SED=$(which sed) || { echo 'sed command not found'; exit 1; }
 
 
-
 echo "Which version do you want to install?"
 echo "1) None, abort installation"
 echo "2) CE 1.5.0.1"
@@ -131,6 +130,7 @@ while true; do
     esac
 done 
 
+
 echo "Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like."
 read -p "Shop name (default: ${MAGE_DEFAULT_NAME}): " MAGE_NAME
 MAGE_NAME=${MAGE_NAME:-${MAGE_DEFAULT_NAME}}
@@ -146,8 +146,42 @@ DB_SQL="CREATE DATABASE IF NOT EXISTS ${DB_NAME} CHARACTER SET utf8 COLLATE utf8
 echo -e "Thanks, the required information was provided. The installation will now begin.\n"
 
 cd $MAGE_BASE_DIR
-echo "Downloading Magento package..."
-wget $MAGE_DOWNLOAD_URL
+
+echo "How do you want to download the Magento package?"
+echo "1) None, abort installation"
+echo "2) wget"
+echo "3) curl"
+
+while true; do
+   read -p "Enter the number (e.g. 2): " DOWNLOAD_METHOD
+
+   case "$DOWNLOAD_METHOD" in
+      1)
+          echo "Aborting installation."
+          exit;
+          ;;
+      2)
+      	  echo " "
+      	  echo "Downloading Magento package..."
+          echo " "
+          wget $MAGE_DOWNLOAD_URL
+          break
+          ;;
+      3)
+          echo " "
+          echo "Downloading Magento package..."
+          echo " "
+          curl -O $MAGE_DOWNLOAD_URL
+          break
+          ;;
+      *)
+          echo -e "Invalid option, please try again.\n"
+          ;;
+    esac
+done 
+
+
+
 echo -e "Package downloaded.\n"
 
 echo "Unpacking package and setting permissions."
