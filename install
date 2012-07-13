@@ -77,7 +77,6 @@ PHP=$(which php) || { echo 'PHP executable not found'; exit 1; }
 SED=$(which sed) || { echo 'sed command not found'; exit 1; }
 
 
-
 echo "Which version do you want to install?"
 echo "1) None, abort installation"
 echo "2) CE 1.5.0.1"
@@ -85,9 +84,7 @@ echo "3) CE 1.5.1.0"
 echo "4) CE 1.6.0.0"
 echo "5) CE 1.6.1.0"
 echo "6) CE 1.6.2.0"
-echo "7) CE 1.7.0.0 alpha1"
-echo "8) CE 1.7.0.0 beta1"
-echo "9) CE 1.7.0.0 rc1"
+echo "7) CE 1.7.0.2"
 
 while true; do
    read -p "Enter the number (e.g. 1): " MAGE_VERSION
@@ -123,18 +120,8 @@ while true; do
           break
           ;;
       7)
-          echo -e "CE 1.7.0.0 alpha1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz"
-          break
-          ;;
-      8)
-          echo -e "CE 1.7.0.0 beta1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz"
-          break
-          ;;
-      9)
-          echo -e "CE 1.7.0.0 rc1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-rc1/magento-1.7.0.0-rc1.tar.gz"
+          echo -e "CE 1.7.0.2 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz"
           break
           ;;
       *)
@@ -142,6 +129,7 @@ while true; do
           ;;
     esac
 done 
+
 
 echo "Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like."
 read -p "Shop name (default: ${MAGE_DEFAULT_NAME}): " MAGE_NAME
@@ -158,8 +146,42 @@ DB_SQL="CREATE DATABASE IF NOT EXISTS ${DB_NAME} CHARACTER SET utf8 COLLATE utf8
 echo -e "Thanks, the required information was provided. The installation will now begin.\n"
 
 cd $MAGE_BASE_DIR
-echo "Downloading Magento package..."
-wget $MAGE_DOWNLOAD_URL
+
+echo "How do you want to download the Magento package?"
+echo "1) None, abort installation"
+echo "2) wget"
+echo "3) curl"
+
+while true; do
+   read -p "Enter the number (e.g. 2): " DOWNLOAD_METHOD
+
+   case "$DOWNLOAD_METHOD" in
+      1)
+          echo "Aborting installation."
+          exit;
+          ;;
+      2)
+      	  echo " "
+      	  echo "Downloading Magento package..."
+          echo " "
+          wget $MAGE_DOWNLOAD_URL
+          break
+          ;;
+      3)
+          echo " "
+          echo "Downloading Magento package..."
+          echo " "
+          curl -O $MAGE_DOWNLOAD_URL
+          break
+          ;;
+      *)
+          echo -e "Invalid option, please try again.\n"
+          ;;
+    esac
+done 
+
+
+
 echo -e "Package downloaded.\n"
 
 echo "Unpacking package and setting permissions."
