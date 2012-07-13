@@ -85,9 +85,7 @@ echo "3) CE 1.5.1.0"
 echo "4) CE 1.6.0.0"
 echo "5) CE 1.6.1.0"
 echo "6) CE 1.6.2.0"
-echo "7) CE 1.7.0.0 alpha1"
-echo "8) CE 1.7.0.0 beta1"
-echo "9) CE 1.7.0.0 rc1"
+echo "7) CE 1.7.0.2"
 
 while true; do
    read -p "Enter the number (e.g. 1): " MAGE_VERSION
@@ -123,18 +121,8 @@ while true; do
           break
           ;;
       7)
-          echo -e "CE 1.7.0.0 alpha1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz"
-          break
-          ;;
-      8)
-          echo -e "CE 1.7.0.0 beta1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz"
-          break
-          ;;
-      9)
-          echo -e "CE 1.7.0.0 rc1 selected.\n"
-          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.0-rc1/magento-1.7.0.0-rc1.tar.gz"
+          echo -e "CE 1.7.0.2 selected.\n"
+          MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz"
           break
           ;;
       *)
