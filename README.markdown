@@ -126,14 +126,12 @@ After the script has finished, you may be two steps away from using the new Mage
 
 ## Changelog
 
-v0.2
----
+### v0.2
 * Script can now both use wget or cURL to download Magento. wget is preferred. (thanks Rouven for the input)
 * modman can be initialized from install script
 * Minor changes / fixes
 
-v0.1
----
+### v0.1
 * Initial commit   
 
 ## License
