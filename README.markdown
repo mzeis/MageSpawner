@@ -14,12 +14,12 @@ The goal is to quickly create new (and remove) Magento installations for testing
   * Needs to be run via sudo / as root (chown and chmod are used) 
   * These commands must be available:
      * basename
+     * command
      * mysql
      * php
      * sed
      * tar
-     * wget
-     * which
+     * wget OR curl
 
 ## Installation
 
@@ -34,7 +34,7 @@ Run `sudo ./install` and follow the instructions. You have to be a superuser bec
 This is how it looks like on my VM:
 
     Welcome to MageSpawner.
-    
+
     Which version do you want to install?
     1) None, abort installation
     2) CE 1.5.0.1
@@ -51,16 +51,16 @@ This is how it looks like on my VM:
     Thanks, the required information was provided. The installation will now begin.
     
     Downloading Magento package...
-    --2012-03-04 12:32:13--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
+    --2012-07-14 14:44:40--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
     Auflösen des Hostnamen www.magentocommerce.com... 209.15.239.51
     Verbindungsaufbau zu www.magentocommerce.com|209.15.239.51|:80... verbunden.
     HTTP-Anforderung gesendet, warte auf Antwort... 200 OK
-    Länge: 17653068 (17M) [application/x-gzip]
+    Länge: 17891797 (17M) [application/x-gzip]
     In »magento-1.7.0.2.tar.gz« speichern.
     
-    100%[===================================================================================================================>] 17.653.068  1,75M/s   in 15s
+    100%[===================================================================================================================>] 17.891.797   932K/s   in 22s
     
-    2012-03-04 12:32:28 (1,13 MB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17653068/17653068]
+    2012-07-14 14:45:03 (791 KB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17891797/17891797]
     
     Package downloaded.
     
@@ -71,7 +71,7 @@ This is how it looks like on my VM:
     Database created.
     
     Executing Magento setup script...
-    SUCCESS: 9a96247823ea7c2cd8f3ebff7db0a544
+    SUCCESS: 01bf386fcd1c62c1624dd2f5682f6322
     Setup script executed. Please write down the encryption key provided above.
     
     Reindexing Magento indexes...
@@ -91,6 +91,9 @@ This is how it looks like on my VM:
     
     Final permission settings...
     Done.
+    
+    Do you want to use modman? (y/n) y
+    Initialized Module Manager at /var/www/magento/shops/1702.magentoshops.vm
     
     If you didn't see any error messages, everything went fine.
     Set up your vhost config and host entries (if needed) and you are ready to go!
@@ -120,6 +123,18 @@ After the script has finished, you may be two steps away from using the new Mage
 
      The VirtualDocumentRoot path /var/www/magento/shops/ has to match the MAGE_BASE_DIR setting in config.conf.
      The script automatically edits Magentos .htaccess so that the RewriteBase is adjusted for this setup.  
+
+## Changelog
+
+v0.2
+---
+* Script can now both use wget or cURL to download Magento. wget is preferred. (thanks Rouven for the input)
+* modman can be initialized from install script
+* Minor changes / fixes
+
+v0.1
+---
+* Initial commit   
 
 ## License
 

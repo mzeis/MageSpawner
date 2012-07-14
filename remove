@@ -69,7 +69,7 @@ if [[ ! -f ${0%/*}/config.conf ]]; then
 fi
 . ${0%/*}/config.conf
 
-MYSQL=$(which mysql) || { echo 'MySQL executable not found'; exit 1; }
+MYSQL=$(which mysql) || { echo >&2 'MySQL executable not found'; exit 1; }
 
 echo "Which shop do you want to uninstall? Provide only the subdomain part of the domains provided."
 ls -1 ${MAGE_BASE_DIR}

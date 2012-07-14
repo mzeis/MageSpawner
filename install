@@ -18,9 +18,9 @@
 # System Requirements:
 # - bash
 # - The following commands must be locatable in your $PATH
-#   basename mysql php sed tar wget which
+#   basename command mysql php sed tar wget (or curl)
 
-version="0.1"
+version="0.2"
 usage="\
 MageSpawner (v$version)
 
@@ -62,20 +62,25 @@ fi
 echo -e 'Welcome to MageSpawner.\n'
 
 if [[ ! -f ${0%/*}/config.conf ]]; then
-  echo -e 'config.conf not found.\nPlease copy config.conf.sample to config.conf and adjust your settings.'
+  echo -e >&2 'config.conf not found.\nPlease copy config.conf.sample to config.conf and adjust your settings.'
   exit 1
 fi
 . ${0%/*}/config.conf
 
 if [[ $MAGE_BASE_DIR = "" || $MAGE_BASE_DIR = "/" ]]; then
-  echo "Base directory '$MAGE_BASE_DIR' is not allowed. Please change in configuration."
+  echo >&2 "Base directory '$MAGE_BASE_DIR' is not allowed. Please change in configuration."
   exit 1
 fi
 
-MYSQL=$(which mysql) || { echo 'MySQL executable not found'; exit 1; }
-PHP=$(which php) || { echo 'PHP executable not found'; exit 1; }
-SED=$(which sed) || { echo 'sed command not found'; exit 1; }
-
+MYSQL=$(command -v mysql) || { echo >&2 'MySQL executable not found'; exit 1; }
+PHP=$(command -v php) || { echo >&2 'PHP executable not found'; exit 1; }
+SED=$(command -v sed) || { echo >&2 'sed command not found'; exit 1; }
+WGET=$(command -v wget)
+CURL=$(command -v curl)
+if [[ $WGET = "" && $CURL = "" ]]; then
+  echo >&2 'Neither wget nor curl command found. Please install wget or curl and re-run command.';
+  exit 1;
+fi
 
 echo "Which version do you want to install?"
 echo "1) None, abort installation"
@@ -147,40 +152,13 @@ echo -e "Thanks, the required information was provided. The installation will no
 
 cd $MAGE_BASE_DIR
 
-echo "How do you want to download the Magento package?"
-echo "1) None, abort installation"
-echo "2) wget"
-echo "3) curl"
+echo -e "Downloading Magento package..."
 
-while true; do
-   read -p "Enter the number (e.g. 2): " DOWNLOAD_METHOD
-
-   case "$DOWNLOAD_METHOD" in
-      1)
-          echo "Aborting installation."
-          exit;
-          ;;
-      2)
-      	  echo " "
-      	  echo "Downloading Magento package..."
-          echo " "
-          wget $MAGE_DOWNLOAD_URL
-          break
-          ;;
-      3)
-          echo " "
-          echo "Downloading Magento package..."
-          echo " "
-          curl -O $MAGE_DOWNLOAD_URL
-          break
-          ;;
-      *)
-          echo -e "Invalid option, please try again.\n"
-          ;;
-    esac
-done 
-
-
+if [[ $WGET != "" ]]; then
+  wget $MAGE_DOWNLOAD_URL
+elif [[ $CURL != "" ]]; then
+  curl -O $MAGE_DOWNLOAD_URL
+fi
 
 echo -e "Package downloaded.\n"
 
@@ -203,6 +181,7 @@ echo -e "Setup script executed. Please write down the encryption key provided ab
 
 echo "Reindexing Magento indexes..."
 $PHP -f shell/indexer.php reindexall
+chmod 666 var/locks/*
 echo -e "Indexes reindexed.\n"
 
 echo "Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)..."
@@ -216,6 +195,37 @@ echo "Final permission settings..."
 chmod 644 app/etc/local.xml
 chown ${LINUX_USER}:${LINUX_GROUP} app/etc/local.xml
 echo -e "Done.\n"
+
+while true; do
+   read -p "Do you want to use modman? (y/n) " MODMAN_USE
+
+   case "$MODMAN_USE" in
+      y)
+          MODMAN_BIN=$(command -v modman)
+          
+          if [[ $MODMAN_BIN != "" ]]; then
+              modman init
+              echo ""
+          else
+              # if [[ $WGET != "" ]]; then
+              #   bash < <(wget -O - https://raw.github.com/colinmollenhour/modman/master/modman-installer)
+              # elif [[ $CURL != "" ]]; then
+              #   bash < <(curl -s https://raw.github.com/colinmollenhour/modman/master/modman-installer)
+              # fi
+              # source ~/.profile
+              echo 'Please install modman first: https://github.com/colinmollenhour/modman';
+              echo 'Then call "modman init" from the Magento root directory as this will not be executed now.';
+          fi 
+          break;        
+          ;;
+      n)
+          break;
+          ;;
+      *)
+          echo -e "Invalid command, please enter 'y' or 'n' (without quotes).\n"
+          ;;
+    esac
+done
 
 echo "If you didn't see any error messages, everything went fine."
 echo "Set up your vhost config and host entries (if needed) and you are ready to go!"
