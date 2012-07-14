@@ -42,26 +42,25 @@ This is how it looks like on my VM:
     4) CE 1.6.0.0
     5) CE 1.6.1.0
     6) CE 1.6.2.0
-    7) CE 1.7.0.0 alpha1
-    8) CE 1.7.0.0 beta1
-    Enter the number (e.g. 1): 8
-    CE 1.7.0.0 beta1 selected.
+    7) CE 1.7.0.2
+    Enter the number (e.g. 1): 7
+    CE 1.7.0.2 selected.
     
     Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like.
-    Shop name (default: shop): 1700beta1
+    Shop name (default: shop): 1702
     Thanks, the required information was provided. The installation will now begin.
     
     Downloading Magento package...
-    --2012-03-04 12:32:13--  http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz
+    --2012-03-04 12:32:13--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
     Auflösen des Hostnamen www.magentocommerce.com... 209.15.239.51
     Verbindungsaufbau zu www.magentocommerce.com|209.15.239.51|:80... verbunden.
     HTTP-Anforderung gesendet, warte auf Antwort... 200 OK
     Länge: 17653068 (17M) [application/x-gzip]
-    In »magento-1.7.0.0-beta1.tar.gz« speichern.
+    In »magento-1.7.0.2.tar.gz« speichern.
     
     100%[===================================================================================================================>] 17.653.068  1,75M/s   in 15s
     
-    2012-03-04 12:32:28 (1,13 MB/s) - »magento-1.7.0.0-beta1.tar.gz« gespeichert [17653068/17653068]
+    2012-03-04 12:32:28 (1,13 MB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17653068/17653068]
     
     Package downloaded.
     
@@ -95,12 +94,12 @@ This is how it looks like on my VM:
     
     If you didn't see any error messages, everything went fine.
     Set up your vhost config and host entries (if needed) and you are ready to go!
-    The frontend shop URL is http://1700beta1.magentoshops.vm.
+    The frontend shop URL is http://1702.magentoshops.vm.
 
 
 After the script has finished, you may be two steps away from using the new Magento installation:
 
-  1. **Add an entry two your hosts file**. Your browser has to know which server the domain (e.g. 1700beta1.magentoshops.vom) belongs to. If you use a real domain and have set an wildcard DNS record, then you are good to go. Otherwise, open your hosts file and a line like `192.168.1.2 1700beta1.magentoshops.vm` (don't forget to change this to the correct IP and domain).
+  1. **Add an entry two your hosts file**. Your browser has to know which server the domain (e.g. 1702.magentoshops.vm) belongs to. If you use a real domain and have set an wildcard DNS record, then you are good to go. Otherwise, open your hosts file and a line like `192.168.1.2 1702.magentoshops.vm` (don't forget to change this to the correct IP and domain).
 
   2. **Add an entry to your server configuration**. Your web server has to know how to handle the request. Normally, you would have to add a [Virtual Host](http://httpd.apache.org/docs/2.2/vhosts/name-based.html) every single time you setup a new Magento installation.
 
