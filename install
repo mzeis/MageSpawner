@@ -176,6 +176,7 @@ $MYSQL -u${DB_USER} -p${DB_PASS} -e "${DB_SQL}"
 echo -e "Database created.\n"
 
 echo "Executing Magento setup script..."
+$SED -i 's/<pdo_mysql\>/<pdo_mysql>1<\/pdo_mysql>/g' app/code/core/Mage/Install/etc/config.xml
 $PHP -f install.php -- --license_agreement_accepted "yes" --locale "de_DE" --timezone "Europe/Berlin" --default_currency "EURO" --db_host "${DB_HOST}" --db_name "${DB_NAME}" --db_user "${DB_USER}" --db_pass "${DB_PASS}" \ db_prefix "${DB_TABLEPREFIX}" --session_save "files" --admin_frontname "${ADMIN_FRONTNAME}" --url "${MAGE_UNSECURE_URL}" --skip_url_validation --use_rewrites "yes" --use_secure "no" --secure_base_url "${MAGE_SECURE_URL}" --use_secure_admin "no" --admin_firstname "${ADMIN_FIRSTNAME}" --admin_lastname "${ADMIN_LASTNAME}" --admin_email "${ADMIN_EMAIL}" --admin_username "${ADMIN_USERNAME}" --admin_password "${ADMIN_PASSWORD}"
 echo -e "Setup script executed. Please write down the encryption key provided above.\n"
 
