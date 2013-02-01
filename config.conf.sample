@@ -3,7 +3,15 @@ MAGE_DEFAULT_NAME="shop"                   # Preset for the shop name. The shop 
                                            # as part of the domain, directory and database name.
 MAGE_BASE_DIR="/var/www/magento/shops/"    # Base directory for the Magento installations
 LINUX_USER="www-data"                      # File owner for the Magento installation
-LINUX_GROUP="www-data"                     # File group for the Magento installation 
+LINUX_GROUP="www-data"                     # File group for the Magento installation
+LINUX_PERM_WRITABLE_FOLDERS="777"          # Permissions of folders that have to be writable
+                                           # for webserver user
+LINUX_PERM_WRITABLE_FILES="666"            # Permissions of files that have to be writable
+                                           # for webserver user
+LINUX_PERM_READABLE_FOLDERS="755"          # Permissions of folders that have to be readable for
+                                           # webserver user (only used for Magento root folder atm)
+LINUX_PERM_READABLE_FILES="644"            # Permissions of files that have to be readable for
+                                           # webserver user (only used for app/etc/local.xml atm)
 ADMIN_FRONTNAME="admin"                    # Path to the admin panel
 ADMIN_FIRSTNAME=""                         # Admin user first name
 ADMIN_LASTNAME=""                          # Admin user last name

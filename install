@@ -1,7 +1,7 @@
 #!/bin/bash
 # MageSpawner
 #
-# Copyright 2011-2012 Matthias Zeis
+# Copyright 2011-2013 Matthias Zeis
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 # - The following commands must be locatable in your $PATH
 #   basename command mysql php sed tar wget (or curl)
 
-version="0.2"
+version="0.2.1"
 usage="\
 MageSpawner (v$version)
 
@@ -81,7 +81,13 @@ if [[ $WGET = "" && $CURL = "" ]]; then
   echo >&2 'Neither wget nor curl command found. Please install wget or curl and re-run command.';
   exit 1;
 fi
-
+if [[ $EUID -ne 0 ]]; then
+  CMDCHMOD="sudo chmod"
+  CMDCHOWN="sudo chown"
+else
+  CMDCHMOD="chmod"
+  CMDCHOWN="chown"
+fi
 echo "Which version do you want to install?"
 echo "1) None, abort installation"
 echo "2) CE 1.5.0.1"
@@ -166,9 +172,8 @@ echo "Unpacking package and setting permissions."
 tar -zxf $MAGE_DOWNLOAD_FILENAME 
 mv magento/ "$MAGE_SHOPDOMAIN"/
 rm -f $MAGE_DOWNLOAD_FILENAME
-chown -R ${LINUX_USER}:${LINUX_GROUP} "$MAGE_SHOPDOMAIN"/
 cd "$MAGE_SHOPDOMAIN"/
-chmod 777 app/etc var/ media/
+$CMDCHMOD $LINUX_PERM_WRITABLE_FOLDERS . app/etc var/ media/
 echo -e "Package unpacked and permssions set.\n"
 
 echo "Creating database..."
@@ -182,7 +187,7 @@ echo -e "Setup script executed. Please write down the encryption key provided ab
 
 echo "Reindexing Magento indexes..."
 $PHP -f shell/indexer.php reindexall
-chmod 666 var/locks/*
+$CMDCHMOD $LINUX_PERM_WRITABLE_FILES var/locks/*
 echo -e "Indexes reindexed.\n"
 
 echo "Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)..."
@@ -190,12 +195,6 @@ cp .htaccess .htaccess.backup
 $SED "s/#RewriteBase \/magento\//RewriteBase \//" ${MAGE_BASE_DIR}${MAGE_SHOPDOMAIN}/.htaccess.backup >.htaccess
 rm .htaccess.backup
 echo -e ".htaccess edited.\n"
-
-# Adjust permissions 
-echo "Final permission settings..."
-chmod 644 app/etc/local.xml
-chown ${LINUX_USER}:${LINUX_GROUP} app/etc/local.xml
-echo -e "Done.\n"
 
 while true; do
    read -p "Do you want to use modman? (y/n) " MODMAN_USE
@@ -227,6 +226,13 @@ while true; do
           ;;
     esac
 done
+
+# Adjust permissions 
+echo "Final permission settings..."
+$CMDCHMOD $LINUX_PERM_READABLE_FILES app/etc/local.xml
+$CMDCHMOD $LINUX_PERM_READABLE_FOLDERS .
+$CMDCHOWN -R ${LINUX_USER}:${LINUX_GROUP} .
+echo -e "Done.\n"
 
 echo "If you didn't see any error messages, everything went fine."
 echo "Set up your vhost config and host entries (if needed) and you are ready to go!"

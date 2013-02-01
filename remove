@@ -1,7 +1,7 @@
 #!/bin/bash
 # MageSpawner Remover
 #
-# Copyright 2011-2012 Matthias Zeis
+# Copyright 2011-2013 Matthias Zeis
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #   mysql
 #   
 
-version="0.1"
+version="0.2.1"
 usage="\
 MageSpawner Remover (v$version)
 
@@ -70,6 +70,11 @@ fi
 . ${0%/*}/config.conf
 
 MYSQL=$(which mysql) || { echo >&2 'MySQL executable not found'; exit 1; }
+if [[ $EUID -ne 0 ]]; then
+  CMDRM="sudo rm"
+else
+  CMDRM="rm"
+fi
 
 echo "Which shop do you want to uninstall? Provide only the subdomain part of the domains provided."
 ls -1 ${MAGE_BASE_DIR}
@@ -90,7 +95,7 @@ DB_NAME="${DB_NAMEPREFIX}${MAGE_SHOP_CODE}"
 DB_SQL="DROP DATABASE ${DB_NAME};"
 
 echo -e "\nDeleting files..."
-rm -rf ${MAGE_SHOP_DIR}
+$CMDRM -rf ${MAGE_SHOP_DIR}
 echo -e "Files deleted.\n"
 
 echo "Deleting database..."

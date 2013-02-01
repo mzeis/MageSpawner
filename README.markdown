@@ -1,4 +1,4 @@
-# MageSpawner
+ # MageSpawner
 
 This is a little handy shell script that I am using for quite a while now.
 The goal is to quickly create new (and remove) Magento installations for testing purposes. Testing as in "I want to try something", not as in Unit Testing.
@@ -29,12 +29,12 @@ The goal is to quickly create new (and remove) Magento installations for testing
 
 ## Getting started
 
-Run `sudo ./install` and follow the instructions. You have to be a superuser because chown and chmod are used. At the moment, you have to enter the details in an interactive mode (= no command line automatisation).
+Run `./install` and follow the instructions. If you aren't logged in as root, sudo will be used for the commands `chown` and `chmod`. At the moment, you have to enter the details in an interactive mode (= no command line automatisation).
 
 This is how it looks like on my VM:
 
     Welcome to MageSpawner.
-
+    
     Which version do you want to install?
     1) None, abort installation
     2) CE 1.5.0.1
@@ -46,21 +46,21 @@ This is how it looks like on my VM:
     Enter the number (e.g. 1): 7
     CE 1.7.0.2 selected.
     
-    Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like.
-    Shop name (default: shop): 1702
+    Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like     .
+    Shop name (default: shop): test
     Thanks, the required information was provided. The installation will now begin.
     
     Downloading Magento package...
-    --2012-07-14 14:44:40--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
+    --2013-02-01 19:25:57--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
     Auflösen des Hostnamen www.magentocommerce.com... 209.15.239.51
     Verbindungsaufbau zu www.magentocommerce.com|209.15.239.51|:80... verbunden.
     HTTP-Anforderung gesendet, warte auf Antwort... 200 OK
     Länge: 17891797 (17M) [application/x-gzip]
     In »magento-1.7.0.2.tar.gz« speichern.
     
-    100%[===================================================================================================================>] 17.891.797   932K/s   in 22s
+    100%[==============================================================================================>] 17.891.797   438K/s   in 44s
     
-    2012-07-14 14:45:03 (791 KB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17891797/17891797]
+    2013-02-01 19:26:41 (399 KB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17891797/17891797]
     
     Package downloaded.
     
@@ -71,7 +71,7 @@ This is how it looks like on my VM:
     Database created.
     
     Executing Magento setup script...
-    SUCCESS: 01bf386fcd1c62c1624dd2f5682f6322
+    SUCCESS: 7804dbac5c3ab69ecce4667681a814ae
     Setup script executed. Please write down the encryption key provided above.
     
     Reindexing Magento indexes...
@@ -89,15 +89,15 @@ This is how it looks like on my VM:
     Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)...
     .htaccess edited.
     
+    Do you want to use modman? (y/n) y
+    Initialized Module Manager at /var/www/magento/shops/test.magentoshops.vm
+    
     Final permission settings...
     Done.
     
-    Do you want to use modman? (y/n) y
-    Initialized Module Manager at /var/www/magento/shops/1702.magentoshops.vm
-    
     If you didn't see any error messages, everything went fine.
     Set up your vhost config and host entries (if needed) and you are ready to go!
-    The frontend shop URL is http://1702.magentoshops.vm.
+    The frontend shop URL is http://test.magentoshops.vm.
 
 
 After the script has finished, you may be two steps away from using the new Magento installation:
@@ -106,7 +106,7 @@ After the script has finished, you may be two steps away from using the new Mage
 
   2. **Add an entry to your server configuration**. Your web server has to know how to handle the request. Normally, you would have to add a [Virtual Host](http://httpd.apache.org/docs/2.2/vhosts/name-based.html) every single time you setup a new Magento installation.
 
-     As programmers don't like to repeat themselves an I'm a programmer, I'm using the [Apache Module mod_vhost_alias](http://httpd.apache.org/docs/2.0/mod/mod_vhost_alias.html) and the nifty `VirtualDocumentRoot` directive.
+     As programmers don't like to repeat themselves and I'm a programmer, I'm using the [Apache Module mod_vhost_alias](http://httpd.apache.org/docs/2.0/mod/mod_vhost_alias.html) and the nifty `VirtualDocumentRoot` directive.
 
      This is what my configuration looks like:
   
@@ -124,7 +124,37 @@ After the script has finished, you may be two steps away from using the new Mage
      The VirtualDocumentRoot path /var/www/magento/shops/ has to match the MAGE_BASE_DIR setting in config.conf.
      The script automatically edits Magentos .htaccess so that the RewriteBase is adjusted for this setup.  
 
+## Removing a test installation
+
+If you want to remove a test installation, call `./remove`. Again, the script will ask for your sudo password if you aren't root.
+
+This is how it looks on my VM:
+
+    Welcome to the Magento uninstall script.
+
+    Which shop do you want to uninstall? Provide only the subdomain part of the domains provided.
+    1700.magentoshops.vm
+    1702.magentoshops.vm
+    test.magentoshops.vm
+    Shop code: test
+    
+    Deleting files...
+    [sudo] password for matthias:
+    Files deleted.
+    
+    Deleting database...
+    Database deleted.
+    
+    Shop was deleted successfully. Please delete vhost entries and host config as needed.
+
 ## Changelog
+
+### v0.2.1
+* Merged pull request by Nils Preuß:
+  "Added fix for 'PHP Extensions "0" must be loaded , while installing magento-1.7.x' that occured in at least some installations"
+  Thanks for this!
+* Script doesn't have to be called with sudo anymore because the script itself will ask for sudo if needed.
+* New configuration parameters for file and folder permissions
 
 ### v0.2
 * Script can now both use wget or cURL to download Magento. wget is preferred. (thanks Rouven for the input)
@@ -136,7 +166,7 @@ After the script has finished, you may be two steps away from using the new Mage
 
 ## License
 
-   Copyright 2011-2012 Matthias Zeis
+   Copyright 2011-2013 Matthias Zeis
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
