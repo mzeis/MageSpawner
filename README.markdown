@@ -1,4 +1,4 @@
- # MageSpawner
+# MageSpawner
 
 This is a little handy shell script that I am using for quite a while now.
 The goal is to quickly create new (and remove) Magento installations for testing purposes. Testing as in "I want to try something", not as in Unit Testing.
