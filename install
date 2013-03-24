@@ -20,7 +20,7 @@
 # - The following commands must be locatable in your $PATH
 #   basename command mysql php sed tar wget (or curl)
 
-version="0.3"
+version="0.3.1"
 usage="\
 MageSpawner (v$version)
 
@@ -134,6 +134,24 @@ init_spawner ()
     echo -e 'Welcome to MageSpawner.\n'
     
     return 0
+}
+
+###########################
+## Get Magento archive file
+
+get_magento_archive_file ()
+{
+    if [[ ! -f $MAGE_DOWNLOAD_PATH ]]; then
+      mkdir -p ${MAGE_DOWNLOAD_DIR}
+      echo -e "Downloading Magento package..."
+      if [[ $WGET != "" ]]; then
+        wget -O $MAGE_DOWNLOAD_PATH $MAGE_DOWNLOAD_URL
+      elif [[ $CURL != "" ]]; then
+        curl $MAGE_DOWNLOAD_URL -o $MAGE_DOWNLOAD_PATH
+      fi
+      echo -e "Package downloaded.\n"
+    fi
+    return 0;
 }
 
 ###########################
@@ -332,25 +350,17 @@ MAGE_SECURE_URL="http://${MAGE_SHOPDOMAIN}"
 MAGE_DOWNLOAD_FILENAME=$(basename $MAGE_DOWNLOAD_URL)
 DB_NAME="${DB_NAMEPREFIX}${MAGE_NAME}"
 DB_SQL="CREATE DATABASE IF NOT EXISTS ${DB_NAME} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+MAGE_DOWNLOAD_PATH="${MAGE_DOWNLOAD_DIR}${MAGE_DOWNLOAD_FILENAME}"
 
 echo -e "Thanks, the required information was provided. The installation will now begin.\n"
 
 cd $MAGE_BASE_DIR
 
-echo -e "Downloading Magento package..."
-
-if [[ $WGET != "" ]]; then
-  wget $MAGE_DOWNLOAD_URL
-elif [[ $CURL != "" ]]; then
-  curl -O $MAGE_DOWNLOAD_URL
-fi
-
-echo -e "Package downloaded.\n"
+get_magento_archive_file
 
 echo "Unpacking package and setting permissions."
-tar -zxf $MAGE_DOWNLOAD_FILENAME 
+tar -zxf $MAGE_DOWNLOAD_PATH 
 mv magento/ "$MAGE_SHOPDOMAIN"/
-rm -f $MAGE_DOWNLOAD_FILENAME
 cd "$MAGE_SHOPDOMAIN"/
 $CMDCHMOD $LINUX_PERM_WRITABLE_FOLDERS . app/etc var/ media/
 echo -e "Package unpacked and permssions set.\n"

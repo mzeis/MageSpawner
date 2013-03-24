@@ -190,6 +190,9 @@ This is how it looks on my VM:
 
 ## Changelog
 
+### v0.3.1
+* Cache downloaded archive files for faster creation of a new shop (directory configurable via MAGE_DOWNLOAD_DIR)
+
 ### v0.3
 * Added command line parameters for automatic installation
 

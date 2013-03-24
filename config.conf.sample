@@ -1,3 +1,4 @@
+MAGE_DOWNLOAD_DIR="/tmp/MageSpawner/"      # Directory in which downloaded Magento files can be stored
 MAGE_DOMAIN="magentoshops.vm"              # The shops will be created under this subdomain
 MAGE_DEFAULT_NAME="shop"                   # Preset for the shop name. The shop name is used
                                            # as part of the domain, directory and database name.
