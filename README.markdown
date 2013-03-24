@@ -124,6 +124,47 @@ After the script has finished, you may be two steps away from using the new Mage
      The VirtualDocumentRoot path /var/www/magento/shops/ has to match the MAGE_BASE_DIR setting in config.conf.
      The script automatically edits Magentos .htaccess so that the RewriteBase is adjusted for this setup.  
 
+## Automatic installation via command line
+
+You may want to do a fully automated installation. This feature was added in v0.3.
+
+Have a look at this example:
+    
+    ./install --mageversion ce1702 --magename 1702 --magedomain 1702.magentoshops.vm --modman y
+    
+For an explanation of the parameters, call `./install --help`:
+
+    MageSpawner (v0.3)
+    
+    MageSpawner is a tool for quick setup of multiple Magento test installations.
+    THIS IS NOT MEANT TO BE USED ON PRODUCTION ENVIORNMENTS!
+    
+    Usage:
+    ./install
+    Then follow the instructions on the screen.
+    
+    Consult the README for further information.
+    
+    Options:
+    
+      --help , -h, -?           display this help message
+      --magedomain              Specify the shop domain (e.g. 1702.magentoshops.vm).
+                                The subdomain has to be the same string as --magename
+      --magename                The shop name which gets used for the URL, directory and database name.
+      --mageversion             Version of Magento to be used. Has to be one of
+                                [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702]
+      --modman                  Whether you want modman to be initialized.
+                                [y|n]
+      --usage                   display this help message
+      --version                 display the version of this script
+    
+    Get more information at
+    https://github.com/mzeis/MageSpawner
+
+The parameters `--magedomain`, `--magename`, `--mageversion` and `--modman` are required for a fully automatic installation. If parameters are omitted, you will be asked for the missing information.
+
+Please note that you may be asked for your `sudo` password. 
+
 ## Removing a test installation
 
 If you want to remove a test installation, call `./remove`. Again, the script will ask for your sudo password if you aren't root.
@@ -148,6 +189,9 @@ This is how it looks on my VM:
     Shop was deleted successfully. Please delete vhost entries and host config as needed.
 
 ## Changelog
+
+### v0.3
+* Added command line parameters for automatic installation
 
 ### v0.2.1
 * Merged pull request by Nils Preuß:
