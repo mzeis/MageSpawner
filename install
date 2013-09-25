@@ -20,7 +20,7 @@
 # - The following commands must be locatable in your $PATH
 #   basename command mysql php sed tar wget (or curl)
 
-version="0.3.1"
+version="0.3.2"
 usage="\
 MageSpawner (v$version)
 
@@ -40,7 +40,7 @@ Options:
                             The subdomain has to be the same string as --magename
   --magename                The shop name which gets used for the URL, directory and database name.
   --mageversion             Version of Magento to be used. Has to be one of
-                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702]
+                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|cd1800]
   --modman                  Whether you want modman to be initialized.
                             [y|n]                            
   --usage                   display this help message
@@ -184,6 +184,10 @@ get_magento_download_url ()
             MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz"
             return 0;
             ;;
+        ce1800)
+            MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.8.0.0/magento-1.8.0.0.tar.gz"
+            return 0;
+            ;;
         *)
             MAGE_DOWNLOAD_URL=""
             return 1;
@@ -210,6 +214,7 @@ get_magento_version ()
     echo "5) CE 1.6.1.0"
     echo "6) CE 1.6.2.0"
     echo "7) CE 1.7.0.2"
+    echo "8) CE 1.8.0.0"
     
     while true; do
        read -p "Enter the number (e.g. 1): " INPUT_MAGE_VERSION
@@ -221,32 +226,37 @@ get_magento_version ()
               ;;
           2)
               echo -e "CE 1.5.0.1 selected.\n"
-              get_magento_download_url ce1501
+              MAGE_VERSION="ce1501"
               break
               ;;
           3)
               echo -e "CE 1.5.1.0 selected.\n"
-              get_magento_download_url ce1510
+              MAGE_VERSION="ce1510"
               break
               ;;
           4)
               echo -e "CE 1.6.0.0 selected.\n"
-              get_magento_download_url ce1600
+              MAGE_VERSION="ce1600"
               break
               ;;
           5)
               echo -e "CE 1.6.1.0 selected.\n"
-              get_magento_download_url ce1610
+              MAGE_VERSION="ce1610"
               break
               ;;
           6)
               echo -e "CE 1.6.2.0 selected.\n"
-              get_magento_download_url ce1620
+              MAGE_VERSION="ce1620"
               break
               ;;
           7)
               echo -e "CE 1.7.0.2 selected.\n"
-              get_magento_download_url ce1702
+              MAGE_VERSION="ce1702"
+              break
+              ;;
+          8)
+              echo -e "CE 1.8.0.0 selected.\n"
+              MAGE_VERSION="ce1800"
               break
               ;;
           *)
@@ -254,6 +264,8 @@ get_magento_version ()
               ;;
         esac
     done 
+    
+    get_magento_download_url $MAGE_VERSION
     
     return 0
 }
@@ -363,14 +375,21 @@ tar -zxf $MAGE_DOWNLOAD_PATH
 mv magento/ "$MAGE_SHOPDOMAIN"/
 cd "$MAGE_SHOPDOMAIN"/
 $CMDCHMOD $LINUX_PERM_WRITABLE_FOLDERS . app/etc var/ media/
-echo -e "Package unpacked and permssions set.\n"
+echo -e "Package unpacked and permissions set.\n"
 
 echo "Creating database..."
 $MYSQL -u${DB_USER} -p${DB_PASS} -e "${DB_SQL}"
 echo -e "Database created.\n"
 
 echo "Executing Magento setup script..."
-$SED -i 's/<pdo_mysql\>/<pdo_mysql>1<\/pdo_mysql>/g' app/code/core/Mage/Install/etc/config.xml
+
+# Fix bug in CE 1.6 and 1.7
+VERSIONS_PDO_BUG=['ce1600','ce1610','ce1620','ce1702']
+if [[ ${VERSIONS_PDO_BUG[*]} =~ $MAGE_VERSION ]]
+then
+  $SED -i 's/<pdo_mysql\>/<pdo_mysql>1<\/pdo_mysql>/g' app/code/core/Mage/Install/etc/config.xml
+fi
+
 $PHP -f install.php -- --license_agreement_accepted "yes" --locale "de_DE" --timezone "Europe/Berlin" --default_currency "EURO" --db_host "${DB_HOST}" --db_name "${DB_NAME}" --db_user "${DB_USER}" --db_pass "${DB_PASS}" \ db_prefix "${DB_TABLEPREFIX}" --session_save "files" --admin_frontname "${ADMIN_FRONTNAME}" --url "${MAGE_UNSECURE_URL}" --skip_url_validation --use_rewrites "yes" --use_secure "no" --secure_base_url "${MAGE_SECURE_URL}" --use_secure_admin "no" --admin_firstname "${ADMIN_FIRSTNAME}" --admin_lastname "${ADMIN_LASTNAME}" --admin_email "${ADMIN_EMAIL}" --admin_username "${ADMIN_USERNAME}" --admin_password "${ADMIN_PASSWORD}"
 echo -e "Setup script executed. Please write down the encryption key provided above.\n"
 

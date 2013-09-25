@@ -190,6 +190,9 @@ This is how it looks on my VM:
 
 ## Changelog
 
+### v0.3.2
+* Added Magento CE 1.8.0.0
+
 ### v0.3.1
 * Cache downloaded archive files for faster creation of a new shop (directory configurable via MAGE_DOWNLOAD_DIR)
 
