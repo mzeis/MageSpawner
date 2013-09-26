@@ -19,9 +19,9 @@
 # - bash
 # - The following executables must be locatable in your $PATH
 #   mysql
-#   
+#
 
-version="0.2.1"
+version="0.3.3"
 usage="\
 MageSpawner Remover (v$version)
 
@@ -40,6 +40,7 @@ Options:
   --help                    display this help message
   --usage                   display this help message
   --version                 display the version of this script
+  --mageshopcode [code]     code of the shop to be deleted
 
 Get more information at
 http://matthias-zeis.com"
@@ -59,7 +60,70 @@ elif [ "$1" = "--version" ]; then
 fi
 
 ###########################
+## Parse the arguments
+
+parse_arguments ()
+{
+    while :
+    do
+        case $1 in
+            -h | --help | --usage | -\?)
+                echo "$usage"
+                exit 0
+                ;;
+            --mageshopcode)
+                MAGE_SHOP_CODE=$2
+                shift 2
+                ;;
+            --) # End of all options
+                shift
+                break
+                ;;
+            -*)
+                echo "WARN: Unknown option (ignored): $1" >&2
+                shift
+                ;;
+            *)  # no more options. Stop while loop
+                break
+                ;;
+        esac
+    done
+
+    return 0
+}
+
+###########################
+## Get Magento shop (= subdomain) name.
+
+get_mage_name ()
+{
+    if [[ -z "$MAGE_SHOP_CODE" ]]; then
+
+           echo "Which shop do you want to uninstall? Provide only the subdomain part of the domains provided."
+             ls -1 ${MAGE_BASE_DIR}
+
+             while true; do
+                read -p "Shop code: " MAGE_SHOP_CODE
+                MAGE_SHOP_DIR="${MAGE_BASE_DIR}${MAGE_SHOP_CODE}.${MAGE_DOMAIN}"
+
+                if [ -d "${MAGE_SHOP_DIR}" ]; then
+                    break;
+                else
+             break;
+                    echo "Shop does not exist. Please retry."
+                fi
+             done
+    else
+        MAGE_SHOP_DIR="${MAGE_BASE_DIR}${MAGE_SHOP_CODE}.${MAGE_DOMAIN}"
+    fi
+
+    return 0
+}
+
+###########################
 ## Main script
+
+parse_arguments "$@"
 
 echo -e "Welcome to the Magento uninstall script.\n"
 
@@ -76,20 +140,7 @@ else
   CMDRM="rm"
 fi
 
-echo "Which shop do you want to uninstall? Provide only the subdomain part of the domains provided."
-ls -1 ${MAGE_BASE_DIR}
-
-while true; do
-   read -p "Shop code: " MAGE_SHOP_CODE
-   MAGE_SHOP_DIR="${MAGE_BASE_DIR}${MAGE_SHOP_CODE}.${MAGE_DOMAIN}"
-
-   if [ -d "${MAGE_SHOP_DIR}" ]; then
-       break;
-   else
-break;
-       echo "Shop does not exist. Please retry."
-   fi
-done
+get_mage_name
 
 DB_NAME="${DB_NAMEPREFIX}${MAGE_SHOP_CODE}"
 DB_SQL="DROP DATABASE ${DB_NAME};"

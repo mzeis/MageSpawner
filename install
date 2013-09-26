@@ -20,7 +20,7 @@
 # - The following commands must be locatable in your $PATH
 #   basename command mysql php sed tar wget (or curl)
 
-version="0.3.2"
+version="0.3.3"
 usage="\
 MageSpawner (v$version)
 

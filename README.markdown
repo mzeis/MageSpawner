@@ -188,7 +188,12 @@ This is how it looks on my VM:
     
     Shop was deleted successfully. Please delete vhost entries and host config as needed.
 
+If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.g. `./remove --mageshopcode test`. 
+
 ## Changelog
+
+### v0.3.3
+* Added Option --mageshopcode to remove
 
 ### v0.3.2
 * Added Magento CE 1.8.0.0
