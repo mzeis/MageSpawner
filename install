@@ -1,7 +1,7 @@
 #!/bin/bash
 # MageSpawner
 #
-# Copyright 2011-2013 Matthias Zeis
+# Copyright 2011-2014 Matthias Zeis
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ Options:
                             The subdomain has to be the same string as --magename
   --magename                The shop name which gets used for the URL, directory and database name.
   --mageversion             Version of Magento to be used. Has to be one of
-                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|cd1800]
+                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|ce1800|ce1810]
   --modman                  Whether you want modman to be initialized.
                             [y|n]                            
   --usage                   display this help message
@@ -188,6 +188,10 @@ get_magento_download_url ()
             MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.8.0.0/magento-1.8.0.0.tar.gz"
             return 0;
             ;;
+        ce1810)
+            MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.8.1.0/magento-1.8.1.0.tar.gz"
+            return 0;
+            ;;
         *)
             MAGE_DOWNLOAD_URL=""
             return 1;
@@ -215,6 +219,7 @@ get_magento_version ()
     echo "6) CE 1.6.2.0"
     echo "7) CE 1.7.0.2"
     echo "8) CE 1.8.0.0"
+    echo "9) CE 1.8.1.0"
     
     while true; do
        read -p "Enter the number (e.g. 1): " INPUT_MAGE_VERSION
@@ -257,6 +262,11 @@ get_magento_version ()
           8)
               echo -e "CE 1.8.0.0 selected.\n"
               MAGE_VERSION="ce1800"
+              break
+              ;;
+          9)
+              echo -e "CE 1.8.1.0 selected.\n"
+              MAGE_VERSION="ce1810"
               break
               ;;
           *)
@@ -390,7 +400,7 @@ then
   $SED -i 's/<pdo_mysql\>/<pdo_mysql>1<\/pdo_mysql>/g' app/code/core/Mage/Install/etc/config.xml
 fi
 
-$PHP -f install.php -- --license_agreement_accepted "yes" --locale "de_DE" --timezone "Europe/Berlin" --default_currency "EURO" --db_host "${DB_HOST}" --db_name "${DB_NAME}" --db_user "${DB_USER}" --db_pass "${DB_PASS}" \ db_prefix "${DB_TABLEPREFIX}" --session_save "files" --admin_frontname "${ADMIN_FRONTNAME}" --url "${MAGE_UNSECURE_URL}" --skip_url_validation --use_rewrites "yes" --use_secure "no" --secure_base_url "${MAGE_SECURE_URL}" --use_secure_admin "no" --admin_firstname "${ADMIN_FIRSTNAME}" --admin_lastname "${ADMIN_LASTNAME}" --admin_email "${ADMIN_EMAIL}" --admin_username "${ADMIN_USERNAME}" --admin_password "${ADMIN_PASSWORD}"
+$PHP -f install.php -- --license_agreement_accepted "yes" --locale "de_DE" --timezone "Europe/Berlin" --default_currency "EUR" --db_host "${DB_HOST}" --db_name "${DB_NAME}" --db_user "${DB_USER}" --db_pass "${DB_PASS}" \ db_prefix "${DB_TABLEPREFIX}" --session_save "files" --admin_frontname "${ADMIN_FRONTNAME}" --url "${MAGE_UNSECURE_URL}" --skip_url_validation --use_rewrites "yes" --use_secure "no" --secure_base_url "${MAGE_SECURE_URL}" --use_secure_admin "no" --admin_firstname "${ADMIN_FIRSTNAME}" --admin_lastname "${ADMIN_LASTNAME}" --admin_email "${ADMIN_EMAIL}" --admin_username "${ADMIN_USERNAME}" --admin_password "${ADMIN_PASSWORD}"
 echo -e "Setup script executed. Please write down the encryption key provided above.\n"
 
 echo "Reindexing Magento indexes..."
