@@ -192,6 +192,9 @@ If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.
 
 ## Changelog
 
+### v0.3.5
+* Fixed version number in script
+
 ### v0.3.4
 * Added Magento CE 1.8.1.0
 * Fixed bug with wrong set currency "EURO".
