@@ -11,7 +11,7 @@ The goal is to quickly create new (and remove) Magento installations for testing
 
   * Linux/Unix (tested on Debian)
   * bash
-  * Needs to be run via sudo / as root (chown and chmod are used) 
+  * You may need to grant the Linux user `sudo` permissions for `chown`, `chmod` and `rm` (see the "To sudo or not to sudo?" section of this document) 
   * These commands must be available:
      * basename
      * command
@@ -26,78 +26,77 @@ The goal is to quickly create new (and remove) Magento installations for testing
   * Get the files from Github.
   * Copy config.conf.sample to config.conf and adjust the settings as needed.
   * Make the files ./install and ./remove executable.
+  
+## To sudo or not to sudo?
+
+MageSpawner wants to help you by setting the correct permissions and ownerships for files and directories. It also wants to help you cleaning up when you remove a test installation.
+
+For this to work, MageSpawner needs to execute `chmod`, `chown` and `rm` on the files. Up to version 0.3.5, MageSpawner always used `sudo` if the user executing the script wasn't a superuser.
+
+Starting with version 0.4.0 there is a new configuration variable `LINUX_USE_SUDO` (defaulting to `true`). If your setup allows to `chmod`, `chown` and `rm` without `sudo` you can set this to `false`. A typical example would be running PHP with FastCGI.
 
 ## Getting started
 
-Run `./install` and follow the instructions. If you aren't logged in as root, sudo will be used for the commands `chown` and `chmod`. At the moment, you have to enter the details in an interactive mode (= no command line automatisation).
+Run `./install` and follow the instructions. If you didn't specify otherwise, sudo will be used for the commands `chown` and `chmod`. If you don't specify all parameters required for an install, you will be asked for the details in an interactive mode.
 
-This is how it looks like on my VM:
+Furthermore MageSpawner will save downloaded archive files so you don't have to download the file every time. 
 
-    Welcome to MageSpawner.
-    
-    Which version do you want to install?
-    1) None, abort installation
-    2) CE 1.5.0.1
-    3) CE 1.5.1.0
-    4) CE 1.6.0.0
-    5) CE 1.6.1.0
-    6) CE 1.6.2.0
-    7) CE 1.7.0.2
-    Enter the number (e.g. 1): 7
-    CE 1.7.0.2 selected.
-    
-    Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like     .
-    Shop name (default: shop): test
-    Thanks, the required information was provided. The installation will now begin.
-    
-    Downloading Magento package...
-    --2013-02-01 19:25:57--  http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz
-    Auflösen des Hostnamen www.magentocommerce.com... 209.15.239.51
-    Verbindungsaufbau zu www.magentocommerce.com|209.15.239.51|:80... verbunden.
-    HTTP-Anforderung gesendet, warte auf Antwort... 200 OK
-    Länge: 17891797 (17M) [application/x-gzip]
-    In »magento-1.7.0.2.tar.gz« speichern.
-    
-    100%[==============================================================================================>] 17.891.797   438K/s   in 44s
-    
-    2013-02-01 19:26:41 (399 KB/s) - »magento-1.7.0.2.tar.gz« gespeichert [17891797/17891797]
-    
-    Package downloaded.
-    
-    Unpacking package and setting permissions.
-    Package unpacked and permssions set.
-    
-    Creating database...
-    Database created.
-    
-    Executing Magento setup script...
-    SUCCESS: 7804dbac5c3ab69ecce4667681a814ae
-    Setup script executed. Please write down the encryption key provided above.
-    
-    Reindexing Magento indexes...
-    Product Attributes index was rebuilt successfully
-    Product Prices index was rebuilt successfully
-    Catalog URL Rewrites index was rebuilt successfully
-    Product Flat Data index was rebuilt successfully
-    Category Flat Data index was rebuilt successfully
-    Category Products index was rebuilt successfully
-    Catalog Search Index index was rebuilt successfully
-    Stock Status index was rebuilt successfully
-    Tag Aggregation Data index was rebuilt successfully
-    Indexes reindexed.
-    
-    Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)...
-    .htaccess edited.
-    
-    Do you want to use modman? (y/n) y
-    Initialized Module Manager at /var/www/magento/shops/test.magentoshops.vm
-    
-    Final permission settings...
-    Done.
-    
-    If you didn't see any error messages, everything went fine.
-    Set up your vhost config and host entries (if needed) and you are ready to go!
-    The frontend shop URL is http://test.magentoshops.vm.
+This is how it looks like in my VM:
+
+	user@server:/path/to/MageSpawner $ ./install
+	Welcome to MageSpawner.
+
+	Which version do you want to install?
+	1) None, abort installation
+	2) CE 1.5.0.1
+	3) CE 1.5.1.0
+	4) CE 1.6.0.0
+	5) CE 1.6.1.0
+	6) CE 1.6.2.0
+	7) CE 1.7.0.2
+	8) CE 1.8.0.0
+	9) CE 1.8.1.0
+	Enter the number (e.g. 1): 9
+	CE 1.8.1.0 selected.
+
+	Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like.
+	Shop name (default: shop): ce1810
+	Thanks, the required information was provided. The installation will now begin.
+
+	Unpacking package and setting permissions.
+	Package unpacked and permissions set.
+
+	Creating database...
+	Database created.
+
+	Executing Magento setup script...
+	SUCCESS: aedeb37b468f920658bb1af6bca10617
+	Setup script executed. Please write down the encryption key provided above.
+
+	Reindexing Magento indexes...
+	Product Attributes index was rebuilt successfully
+	Product Prices index was rebuilt successfully
+	Catalog URL Rewrites index was rebuilt successfully
+	Product Flat Data index was rebuilt successfully
+	Category Flat Data index was rebuilt successfully
+	Category Products index was rebuilt successfully
+	Catalog Search Index index was rebuilt successfully
+	Stock Status index was rebuilt successfully
+	Tag Aggregation Data index was rebuilt successfully
+	Indexes reindexed.
+
+	Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)...
+	.htaccess edited.
+
+	Do you want to use modman? (y/n) y
+	Initialized Module Manager at /path/to/htdocs/ce1810.magetests.vm
+
+	Final permission settings...
+	Done.
+
+	If you didn't see any error messages, everything went fine.
+	Set up your vhost config and host entries (if needed) and you are ready to go!
+	The frontend shop URL is http://ce1810.magetests.vm.
 
 
 After the script has finished, you may be two steps away from using the new Magento installation:
@@ -130,36 +129,37 @@ You may want to do a fully automated installation. This feature was added in v0.
 
 Have a look at this example:
     
-    ./install --mageversion ce1702 --magename 1702 --magedomain 1702.magentoshops.vm --modman y
+    ./install --mageversion ce1810 --magename ce1810 --magedomain ce1810.magentoshops.vm --modman y
     
 For an explanation of the parameters, call `./install --help`:
 
-    MageSpawner (v0.3)
-    
-    MageSpawner is a tool for quick setup of multiple Magento test installations.
-    THIS IS NOT MEANT TO BE USED ON PRODUCTION ENVIORNMENTS!
-    
-    Usage:
-    ./install
-    Then follow the instructions on the screen.
-    
-    Consult the README for further information.
-    
-    Options:
-    
-      --help , -h, -?           display this help message
-      --magedomain              Specify the shop domain (e.g. 1702.magentoshops.vm).
-                                The subdomain has to be the same string as --magename
-      --magename                The shop name which gets used for the URL, directory and database name.
-      --mageversion             Version of Magento to be used. Has to be one of
-                                [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702]
-      --modman                  Whether you want modman to be initialized.
-                                [y|n]
-      --usage                   display this help message
-      --version                 display the version of this script
-    
-    Get more information at
-    https://github.com/mzeis/MageSpawner
+	MageSpawner (v0.4.0)
+	
+	MageSpawner is a tool for quick setup of multiple Magento test installations.
+	THIS IS NOT MEANT TO BE USED ON PRODUCTION ENVIORNMENTS!
+	
+	Usage:
+	./install
+	Then follow the instructions on the screen.
+	
+	Consult the README for further information.
+	
+	Options:
+	
+	  --help , -h, -?           display this help message
+	  --magedomain              Specify the shop domain (e.g. 1702.magentoshops.vm).
+	                            The subdomain has to be the same string as --magename
+	  --magename                The shop name which gets used for the URL, directory and database name.
+	  --mageversion             Version of Magento to be used. Has to be one of
+	                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|ce1800|ce1810]
+	  --modman                  Whether you want modman to be initialized.
+	                            [y|n]
+	  --usage                   display this help message
+	  --version                 display the version of this script
+	
+	Get more information at
+	https://github.com/mzeis/MageSpawner
+
 
 The parameters `--magedomain`, `--magename`, `--mageversion` and `--modman` are required for a fully automatic installation. If parameters are omitted, you will be asked for the missing information.
 
@@ -167,30 +167,32 @@ Please note that you may be asked for your `sudo` password.
 
 ## Removing a test installation
 
-If you want to remove a test installation, call `./remove`. Again, the script will ask for your sudo password if you aren't root.
+If you want to remove a test installation, call `./remove`. Again, the script will ask for your sudo password if you didn't specify otherwise.
 
 This is how it looks on my VM:
 
-    Welcome to the Magento uninstall script.
+	user@server:/path/to/MageSpawner $ ./remove
+	Welcome to the Magento uninstall script.
+	
+	Which shop do you want to uninstall? Provide only the subdomain part of the domains provided.
+	ce1800.magetests.vm
+	ce1810.magetests.vm
+	Shop code: ce1810
+	
+	Deleting files...
+	Files deleted.
+	
+	Deleting database...
+	Database deleted.
+	
+	Shop was deleted successfully. Please delete vhost entries and host config as needed.
 
-    Which shop do you want to uninstall? Provide only the subdomain part of the domains provided.
-    1700.magentoshops.vm
-    1702.magentoshops.vm
-    test.magentoshops.vm
-    Shop code: test
-    
-    Deleting files...
-    [sudo] password for matthias:
-    Files deleted.
-    
-    Deleting database...
-    Database deleted.
-    
-    Shop was deleted successfully. Please delete vhost entries and host config as needed.
-
-If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.g. `./remove --mageshopcode test`. 
+If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.g. `./remove --mageshopcode ce1810`. 
 
 ## Changelog
+
+### v0.4.0
+* Added configuration variable LINUX_USE_SUDO for disabling sudo
 
 ### v0.3.5
 * Fixed version number in script
@@ -228,7 +230,7 @@ If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.
 
 ## License
 
-   Copyright 2011-2013 Matthias Zeis
+   Copyright 2011-2014 Matthias Zeis
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

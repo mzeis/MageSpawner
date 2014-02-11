@@ -3,6 +3,7 @@ MAGE_DOMAIN="magentoshops.vm"              # The shops will be created under thi
 MAGE_DEFAULT_NAME="shop"                   # Preset for the shop name. The shop name is used
                                            # as part of the domain, directory and database name.
 MAGE_BASE_DIR="/var/www/magento/shops/"    # Base directory for the Magento installations
+LINUX_USE_SUDO=true                        # Whether to use sudo for chmod, chown and rm [true|false]
 LINUX_USER="www-data"                      # File owner for the Magento installation
 LINUX_GROUP="www-data"                     # File group for the Magento installation
 LINUX_PERM_WRITABLE_FOLDERS="777"          # Permissions of folders that have to be writable
