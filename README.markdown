@@ -191,6 +191,9 @@ If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.
 
 ## Changelog
 
+### v0.5.0
+* Added Magento CE 1.9.0.0
+
 ### v0.4.0
 * Added configuration variable LINUX_USE_SUDO for disabling sudo
 
