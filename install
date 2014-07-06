@@ -20,7 +20,7 @@
 # - The following commands must be locatable in your $PATH
 #   basename command mysql php sed tar wget (or curl)
 
-version="0.5.0"
+version="0.6.0"
 usage="\
 MageSpawner (v$version)
 
@@ -40,7 +40,7 @@ Options:
                             The subdomain has to be the same string as --magename
   --magename                The shop name which gets used for the URL, directory and database name.
   --mageversion             Version of Magento to be used. Has to be one of
-                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|ce1800|ce1810|ce1900]
+                            [ce1501|ce1510|ce1600|ce1610|ce1620|ce1702|ce1800|ce1810|ce1900|ce1901]
   --modman                  Whether you want modman to be initialized.
                             [y|n]                            
   --usage                   display this help message
@@ -196,6 +196,10 @@ get_magento_download_url ()
             MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.9.0.0/magento-1.9.0.0.tar.gz"
             return 0;
             ;;
+        ce1901)
+            MAGE_DOWNLOAD_URL="http://www.magentocommerce.com/downloads/assets/1.9.0.1/magento-1.9.0.1.tar.gz"
+            return 0;
+            ;;
         *)
             MAGE_DOWNLOAD_URL=""
             return 1;
@@ -225,6 +229,7 @@ get_magento_version ()
     echo "8)  CE 1.8.0.0"
     echo "9)  CE 1.8.1.0"
     echo "10) CE 1.9.0.0"
+    echo "11) CE 1.9.0.1"
     
     while true; do
        read -p "Enter the number (e.g. 1): " INPUT_MAGE_VERSION
@@ -277,6 +282,11 @@ get_magento_version ()
           10)
               echo -e "CE 1.9.0.0 selected.\n"
               MAGE_VERSION="ce1900"
+              break
+              ;;
+          11)
+              echo -e "CE 1.9.0.1 selected.\n"
+              MAGE_VERSION="ce1901"
               break
               ;;
           *)

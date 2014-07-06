@@ -191,6 +191,9 @@ If you know the shopcode, you also can call `./remove --mageshopcode [code]`, e.
 
 ## Changelog
 
+### v0.6.0
+* Added Magento CE 1.9.0.1
+
 ### v0.5.0
 * Added Magento CE 1.9.0.0
 
